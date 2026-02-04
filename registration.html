@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OptiHealth – Register</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:0; }
+    .container {
+      max-width: 420px;
+      margin: 60px auto;
+      padding:24px 28px;
+      border-radius:12px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+      background:#ffffffcc url("https://images.pexels.com/photos/1431283/pexels-photo-1431283.jpeg?auto=compress&cs=tinysrgb&w=800")
+                 no-repeat center center;
+      background-size: cover;
+    }
+    h1 { text-align:center; margin-bottom:8px; }
+    p.subtitle { text-align:center; color:#666; margin-top:0; }
+    label { display:block; margin-top:12px; font-weight:600; }
+    input { width:100%; padding:8px 10px; margin-top:4px; border-radius:6px;
+            border:1px solid #ccc; box-sizing:border-box; }
+    button { margin-top:18px; width:100%; padding:10px; background:#2563eb; color:#fff;
+             border:none; border-radius:8px; font-size:16px; cursor:pointer; }
+    button:hover { background:#1d4ed8; }
+    .link { margin-top:10px; text-align:center; font-size:14px; }
+    .link a { color:#2563eb; text-decoration:none; }
+    .link a:hover { text-decoration:underline; }
+    #message { margin-top:10px; font-size:14px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OptiHealth</h1>
+    <p class="subtitle">Create your account to get personalized plans</p>
+
+    <form id="registerForm">
+      <label>Full Name
+        <input type="text" id="registerName" placeholder="Enter your name" required />
+      </label>
+
+      <label>Email
+        <input type="email" id="registerEmail" placeholder="you@example.com" required />
+      </label>
+
+      <label>Password
+        <input type="password" id="registerPassword" placeholder="Minimum 6 characters" required />
+      </label>
+
+      <button type="submit">Create Account</button>
+    </form>
+
+    <p id="message"></p>
+
+    <div class="link">
+      Already have an account?
+      <a href="index.html">Go to login & planner</a>
+    </div>
+  </div>
+
+  <script>
+    function getUsers() {
+      const raw = localStorage.getItem("optihealth_users");
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem("optihealth_users", JSON.stringify(users));
+    }
+
+    function setCurrentUser(email) {
+      localStorage.setItem("optihealth_current_user", email);
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("registerName").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value;
+      const message = document.getElementById("message");
+
+      if (!name || !email || !password) {
+        message.textContent = "Please fill in all fields.";
+        message.style.color = "red";
+        return;
+      }
+
+      const users = getUsers();
+      if (users.some(u => u.email === email)) {
+        message.textContent = "Email already registered. Please login from the main page.";
+        message.style.color = "red";
+        return;
+      }
+
+      users.push({ name, email, password });
+      saveUsers(users);
+      setCurrentUser(email);
+      message.textContent = "Registration successful. You can now use the planner.";
+      message.style.color = "#2563eb";
+
+      // Optional: redirect to main planner after a short delay
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1200);
+    });
+  </script>
+</body>
+</html>
+

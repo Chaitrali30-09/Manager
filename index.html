@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OptiHealth – Register & Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin:0;
+      padding:0;
+      background:#f5f7fb url("https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1600")
+                  no-repeat center center fixed;
+      background-size: cover;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding:24px 28px;
+      border-radius:12px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+      background-image:
+        linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)),
+        url("https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1200");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    h1 { text-align:center; margin-bottom:8px; }
+    .welcome-title { text-align:center; margin-top:16px; }
+    p.subtitle { text-align:center; color:#666; margin-top:0; }
+    label { display:block; margin-top:12px; font-weight:600; }
+    input, select { width:100%; padding:8px 10px; margin-top:4px; border-radius:6px;
+                    border:1px solid #ccc; box-sizing:border-box; }
+    button { margin-top:18px; width:100%; padding:10px; background:#2563eb; color:#fff;
+             border:none; border-radius:8px; font-size:16px; cursor:pointer; }
+    button:hover { background:#1d4ed8; }
+    .results { margin-top:22px; padding-top:14px; border-top:1px solid #eee; }
+    .results h2 { margin-top:0; font-size:18px; }
+    .tag { display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; margin-left:6px; }
+    .hero-img { width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin:8px 0 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OptiHealth Planner</h1>
+    <p class="subtitle">Create an account and get your personalized plan</p>
+
+    <div id="appSection">
+      <!-- Auth slide (Login / Sign up) -->
+      <div id="registerStep">
+        <h2 class="welcome-title">Welcome</h2>
+        <!-- Login form -->
+        <form id="loginForm">
+          <label>Email
+            <input type="email" id="loginEmail" placeholder="you@example.com" required />
+          </label>
+
+          <label>Password
+            <input type="password" id="loginPassword" placeholder="Enter your password" required />
+          </label>
+
+          <button type="submit">Login</button>
+          <p class="link" style="margin-top:8px;">
+            <a href="#" id="forgotPasswordLink">Forgot password?</a>
+          </p>
+          <p class="link" style="margin-top:4px;">
+            Don't have an account?
+            <a href="#" id="showSignupLink">Sign up</a>
+          </p>
+        </form>
+
+        <!-- Sign up form -->
+        <form id="registerForm" style="display:none; margin-top:12px;">
+          <label>Full Name
+            <input type="text" id="registerName" placeholder="Enter your name" required />
+          </label>
+
+          <label>Email
+            <input type="email" id="registerEmail" placeholder="you@example.com" required />
+          </label>
+
+          <label>Password
+            <input type="password" id="registerPassword" placeholder="Minimum 6 characters" required />
+          </label>
+
+          <button type="submit">Create Account & Continue</button>
+          <p class="link">
+            Already have an account?
+            <a href="#" id="showLoginLink">Login</a>
+          </p>
+        </form>
+        <p id="registerMessage"></p>
+      </div>
+
+      <!-- Input slide -->
+      <div id="plannerStep" style="display:none;">
+        <h2>Enter your details</h2>
+        <form id="plannerForm">
+          <label>Height (cm)
+            <input type="number" id="height" min="50" max="250" required />
+          </label>
+
+          <label>Weight (kg)
+            <input type="number" id="weight" min="20" max="300" required />
+          </label>
+
+          <label>Target Weight (kg)
+            <input type="number" id="targetWeight" min="20" max="300" required />
+          </label>
+
+          <label>Target Body Part
+            <select id="targetBodyPart">
+              <option value="belly">Belly / Core</option>
+              <option value="legs">Legs</option>
+              <option value="arms">Arms</option>
+              <option value="full">Full Body</option>
+            </select>
+          </label>
+
+          <label>Target Time (weeks)
+            <input type="number" id="targetTime" min="1" max="52" required />
+          </label>
+
+          <button type="submit">Generate Plan</button>
+        </form>
+      </div>
+
+      <!-- Plan "slide" -->
+      <div id="resultsStep" style="display:none;">
+        <h2>Your Plan</h2>
+        <div class="results">
+          <table style="width:100%; border-collapse:collapse;">
+            <tr>
+              <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">Item</th>
+              <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">Details</th>
+            </tr>
+            <tr>
+              <td style="padding:8px; vertical-align:top; font-weight:bold;">BMI</td>
+              <td style="padding:8px; vertical-align:top;" id="bmiText"></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Weekly schedule table -->
+        <h3 style="margin-top:24px;">Suggested Weekly Schedule</h3>
+        <table style="width:100%; border-collapse:collapse; margin-top:8px;" id="weeklyTable">
+          <tr>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">Day</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">Workout Focus</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">Diet Tip</th>
+          </tr>
+        </table>
+        
+        <button type="button" id="backToFormBtn">Back to edit details</button>
+        
+        <!-- Support email at very end of last slide -->
+        <p style="margin-top:16px; font-size:13px; text-align:right; color:#111827;">
+          Need help? <span style="font-weight:600;">✉ support@optihealth.com</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews icon button (floating feedback-style button) -->
+  <button
+    id="reviewsIcon"
+    style="
+      position:fixed;
+      right:20px;
+      top:20px;
+      width:52px;
+      height:52px;
+      border-radius:50%;
+      border:none;
+      background:#111827;
+      color:#ffffff;
+      font-size:26px;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,0.3);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    "
+    title="Show reviews & feedback"
+  >
+    💬
+  </button>
+
+  <!-- Reviews panel (hidden by default) -->
+  <div
+    id="reviewsPanel"
+    style="
+      position:fixed;
+      right:20px;
+      bottom:80px;
+      width:260px;
+      max-height:260px;
+      background:rgba(0,0,0,0.8);
+      color:#fff;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:13px;
+      overflow-y:auto;
+      display:none;
+      box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    "
+  >
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <strong>Reviews</strong>
+      <button
+        id="closeReviews"
+        style="border:none; background:transparent; color:#fff; font-size:16px; cursor:pointer;"
+      >
+        ✕
+      </button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div>
+        <strong>Alex, 29</strong><br>
+        “In 4 weeks I felt lighter and more energetic. The clear workout schedule made it easy to follow.”
+      </div>
+      <div>
+        <strong>Riya, 34</strong><br>
+        “Small changes to my diet plus daily walks helped me stay consistent without feeling overwhelmed.”
+      </div>
+      <div>
+        <strong>Sam, 41</strong><br>
+        “I like that the plan balances strength, cardio, and recovery days.”
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Registration logic (using localStorage) ---
+    function getUsers() {
+      const raw = localStorage.getItem("optihealth_users");
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem("optihealth_users", JSON.stringify(users));
+    }
+
+    function setCurrentUser(email) {
+      localStorage.setItem("optihealth_current_user", email);
+    }
+    function showSlide(idToShow) {
+      document.getElementById("registerStep").style.display = "none";
+      document.getElementById("plannerStep").style.display = "none";
+      document.getElementById("resultsStep").style.display = "none";
+      document.getElementById(idToShow).style.display = "block";
+    }
+
+    // Always start on auth (Step 1)
+    showSlide("registerStep");
+
+    // Toggle between Login and Sign up
+    document.getElementById("showSignupLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("registerForm").style.display = "block";
+      document.getElementById("registerMessage").textContent = "";
+    });
+
+    // Reviews icon behaviour
+    const reviewsIcon = document.getElementById("reviewsIcon");
+    const reviewsPanel = document.getElementById("reviewsPanel");
+    const closeReviews = document.getElementById("closeReviews");
+
+    reviewsIcon.addEventListener("click", function () {
+      reviewsPanel.style.display = reviewsPanel.style.display === "block" ? "none" : "block";
+    });
+
+    closeReviews.addEventListener("click", function () {
+      reviewsPanel.style.display = "none";
+    });
+
+    document.getElementById("showLoginLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("registerMessage").textContent = "";
+    });
+
+    // Login handler
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const message = document.getElementById("registerMessage");
+
+      const users = getUsers();
+      const found = users.find(u => u.email === email && u.password === password);
+
+      if (!found) {
+        message.textContent = "Invalid email or password. Please try again or sign up.";
+        message.style.color = "red";
+        return;
+      }
+
+      setCurrentUser(email);
+      message.textContent = "Login successful! Moving to planner...";
+      message.style.color = "#2563eb";
+
+      setTimeout(() => {
+        showSlide("plannerStep");
+      }, 800);
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("registerName").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value;
+      const message = document.getElementById("registerMessage");
+
+      if (!name || !email || !password) {
+        message.textContent = "Please fill in all fields.";
+        message.style.color = "red";
+        return;
+      }
+
+      const users = getUsers();
+      if (users.some(u => u.email === email)) {
+        message.textContent = "Email already registered. You can continue to the planner.";
+        message.style.color = "red";
+        // still let them proceed
+        setCurrentUser(email);
+        showSlide("plannerStep");
+        return;
+      }
+
+      users.push({ name, email, password });
+      saveUsers(users);
+      setCurrentUser(email);
+      message.textContent = "Registration successful! Moving to planner...";
+      message.style.color = "#2563eb";
+
+      setTimeout(() => {
+        showSlide("plannerStep");
+      }, 800);
+    });
+
+    // --- Planner logic ---
+    function calculateBMI(heightCm, weightKg) {
+      const hM = heightCm / 100;
+      return +(weightKg / (hM * hM)).toFixed(1);
+    }
+
+    function getBMICategory(bmi) {
+      if (bmi < 18.5) return "Underweight";
+      if (bmi < 25) return "Normal";
+      if (bmi < 30) return "Overweight";
+      return "Obese";
+    }
+
+    function getDietPlan(category, currentWeight, targetWeight, weeks) {
+      const diff = targetWeight - currentWeight;
+      const perWeek = diff / weeks;
+
+      let base;
+      if (category === "Underweight") {
+        base = "High-calorie, nutrient-dense meals with plenty of healthy fats (nuts, seeds, avocado), lean protein, and complex carbs.";
+      } else if (category === "Normal") {
+        base = "Balanced plate: 40–50% complex carbs, 25–30% lean protein, 25–30% healthy fats with plenty of vegetables.";
+      } else {
+        base = "Mild calorie deficit with focus on high protein, high fiber foods, whole grains, and vegetables. Avoid sugary drinks and ultra-processed snacks.";
+      }
+
+      const trend =
+        diff < 0
+          ? `You aim to lose about ${Math.abs(perWeek).toFixed(1)} kg per week. Focus on a 300–500 kcal daily deficit.`
+          : diff > 0
+          ? `You aim to gain about ${perWeek.toFixed(1)} kg per week. Add 250–400 kcal per day from clean foods.`
+          : "Your target weight equals your current weight. Focus on maintenance and body recomposition.";
+
+      return base + " " + trend;
+    }
+
+    function getWorkoutPlan(targetBodyPart, weeks, category) {
+      const freq = weeks >= 8 ? "4–5 days" : "3–4 days";
+
+      const common = "Include 5–10 minutes warm-up and stretching. Progress intensity gradually each week.";
+      let focus;
+
+      switch (targetBodyPart) {
+        case "belly":
+          focus = "3 sessions per week of core training (planks, dead bugs, bicycle crunches) plus full-body strength and 20–30 minutes of brisk walking or light jogging.";
+          break;
+        case "legs":
+          focus = "Squats, lunges, glute bridges, calf raises 2–3 times per week, plus walking or cycling.";
+          break;
+        case "arms":
+          focus = "Push-ups, dips, rows, bicep curls, tricep extensions 2–3 times per week, combined with full-body movements.";
+          break;
+        default:
+          focus = "Alternate strength days (upper/lower body splits) with light cardio days.";
+      }
+
+      const intensity =
+        category === "Obese"
+          ? "Start low-impact (walking, cycling, swimming) and avoid high-impact jumps at first."
+          : "You can include moderate intensity intervals once you feel comfortable.";
+
+      return `Aim for ${freq} of training per week. ${focus} ${intensity} ${common}`;
+    }
+
+    document.getElementById("plannerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const height = parseFloat(document.getElementById("height").value);
+      const weight = parseFloat(document.getElementById("weight").value);
+      const targetWeight = parseFloat(document.getElementById("targetWeight").value);
+      const targetBodyPart = document.getElementById("targetBodyPart").value;
+      const targetTime = parseInt(document.getElementById("targetTime").value, 10);
+
+      if (!height || !weight || !targetWeight || !targetTime) return;
+
+      const bmi = calculateBMI(height, weight);
+      const category = getBMICategory(bmi);
+
+      // BMI cell: show only value and category (no repeated "BMI" label)
+      const bmiText = document.getElementById("bmiText");
+      bmiText.innerHTML = `<strong>${bmi}</strong>
+        <span class="tag" style="background:#e0ecff;color:#2563eb;">${category}</span>`;
+
+      // Build simple weekly schedule based on target body part
+      const weeklyRows = [];
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+      function workoutForDay(dayIndex) {
+        switch (targetBodyPart) {
+          case "belly":
+            return dayIndex % 2 === 0 ? "Core training + brisk walk" : "Light full-body strength";
+          case "legs":
+            return dayIndex % 2 === 0 ? "Lower body strength (squats, lunges)" : "Walk / cycling 30 min";
+          case "arms":
+            return dayIndex % 2 === 0 ? "Upper body strength (push-ups, rows)" : "Full-body mobility & walk";
+          default:
+            return dayIndex % 2 === 0 ? "Full-body strength" : "Light cardio / active recovery";
+        }
+      }
+
+      function dietTipForDay(dayIndex) {
+        if (dayIndex === 5) return "Plan a lighter dinner and hydrate well; avoid sugary weekend treats.";
+        if (dayIndex === 6) return "Focus on home-cooked meals and plenty of vegetables.";
+        return "Balanced plate: protein, vegetables, whole grains, and healthy fats.";
+      }
+
+      days.forEach((day, idx) => {
+        weeklyRows.push(
+          `<tr>
+            <td style="padding:6px 8px; vertical-align:top;">${day}</td>
+            <td style="padding:6px 8px; vertical-align:top;">${workoutForDay(idx)}</td>
+            <td style="padding:6px 8px; vertical-align:top;">${dietTipForDay(idx)}</td>
+          </tr>`
+        );
+      });
+
+      const weeklyTable = document.getElementById("weeklyTable");
+      weeklyTable.insertAdjacentHTML("beforeend", weeklyRows.join(""));
+
+      // Go to "next slide": hide form, show plan
+      document.getElementById("plannerStep").style.display = "none";
+      document.getElementById("resultsStep").style.display = "block";
+    });
+
+    // Back button from plan slide to form slide
+    document.getElementById("backToFormBtn").addEventListener("click", function () {
+      document.getElementById("resultsStep").style.display = "none";
+      document.getElementById("plannerStep").style.display = "block";
+    });
+
+  </script>
+</body>
+</html>
